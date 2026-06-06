@@ -21,11 +21,27 @@ export interface AppState {
   step: number; // number of solution moves already applied
   solvePositions: number[]; // positions after `step` moves
   message: string | null; // transient feedback (errors, rattle warnings)
+  /** In-game, pressing left slides the pin right (and vice versa). Default on. */
+  invertControls: boolean;
 }
 
 type Listener = (state: AppState) => void;
 
-const freshState = (plateCount: number): AppState => ({
+/** Map a pin-movement direction to the key you actually press in game. */
+export const gameDir = (d: Direction, invert: boolean): Direction =>
+  invert ? ((-d) as Direction) : d;
+
+const INVERT_KEY = 'gothic-lockpick-invert';
+
+const loadInvert = (): boolean => {
+  try {
+    return localStorage.getItem(INVERT_KEY) !== '0';
+  } catch {
+    return true;
+  }
+};
+
+const freshState = (plateCount: number, invertControls: boolean): AppState => ({
   plateCount,
   positions: Array(plateCount).fill(TARGET_POS),
   linkages: Array.from({ length: plateCount }, () => []),
@@ -35,10 +51,11 @@ const freshState = (plateCount: number): AppState => ({
   step: 0,
   solvePositions: [],
   message: null,
+  invertControls,
 });
 
 export class Store {
-  state: AppState = freshState(5);
+  state: AppState = freshState(5, loadInvert());
   private listeners: Listener[] = [];
 
   subscribe(fn: Listener): void {
@@ -57,11 +74,22 @@ export class Store {
   setPlateCount(count: number): void {
     const clamped = Math.min(MAX_PLATES, Math.max(MIN_PLATES, count));
     if (clamped === this.state.plateCount) return;
-    this.mutate((s) => Object.assign(s, freshState(clamped)));
+    this.mutate((s) => Object.assign(s, freshState(clamped, s.invertControls)));
   }
 
   resetLock(): void {
-    this.mutate((s) => Object.assign(s, freshState(s.plateCount)));
+    this.mutate((s) => Object.assign(s, freshState(s.plateCount, s.invertControls)));
+  }
+
+  toggleInvert(): void {
+    this.mutate((s) => {
+      s.invertControls = !s.invertControls;
+      try {
+        localStorage.setItem(INVERT_KEY, s.invertControls ? '1' : '0');
+      } catch {
+        /* private mode etc. — keep it session-only */
+      }
+    });
   }
 
   setPosition(plate: number, pos: number): void {
@@ -90,11 +118,12 @@ export class Store {
     });
   }
 
-  /** Test-push the selected plate to preview the entered linkages. */
+  /** Test-push the selected plate (direction = the key pressed in game). */
   nudge(direction: Direction): void {
-    const { selected, positions, linkages } = this.state;
+    const { selected, positions, linkages, invertControls } = this.state;
     if (selected === null) return;
-    const next = applyMove(positions, linkages, { plate: selected, direction });
+    const pinDir = gameDir(direction, invertControls);
+    const next = applyMove(positions, linkages, { plate: selected, direction: pinDir });
     this.mutate((s) => {
       if (next === null) {
         s.message = 'Rattle! A plate hit the edge — that push is blocked.';

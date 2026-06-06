@@ -178,6 +178,12 @@
   font-style: normal;
 }
 
+.pin-note {
+  display: block;
+  font-size: 13.5px;
+  color: var(--parchment-dim);
+}
+
 .step-nav {
   display: flex;
   justify-content: center;

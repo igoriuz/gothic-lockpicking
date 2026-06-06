@@ -25,6 +25,11 @@ app.innerHTML = `
         </div>
       </div>
       <button id="reset" class="seg">reset</button>
+      <div class="control-group">
+        <span class="control-label">Controls</span>
+        <button id="invert" class="seg"
+          title="Inverted: pressing left in game slides the pin right. All instructions show the key to press.">inverted</button>
+      </div>
       <button id="solve" class="btn-forge">&#128273; Pick the lock</button>
       <p id="message" class="message" hidden></p>
     </section>
@@ -54,6 +59,7 @@ const minusBtn = document.querySelector<HTMLButtonElement>('#plates-minus')!;
 const plusBtn = document.querySelector<HTMLButtonElement>('#plates-plus')!;
 const solveBtn = document.querySelector<HTMLButtonElement>('#solve')!;
 const resetBtn = document.querySelector<HTMLButtonElement>('#reset')!;
+const invertBtn = document.querySelector<HTMLButtonElement>('#invert')!;
 
 store.subscribe((s) => {
   countEl.textContent = String(s.plateCount);
@@ -61,6 +67,8 @@ store.subscribe((s) => {
   plusBtn.disabled = s.plateCount >= MAX_PLATES || s.mode === 'solve';
   solveBtn.hidden = s.mode === 'solve';
   resetBtn.hidden = s.mode === 'solve';
+  invertBtn.textContent = s.invertControls ? 'inverted' : 'direct';
+  invertBtn.classList.toggle('on', s.invertControls);
   messageEl.hidden = s.message === null;
   messageEl.textContent = s.message ?? '';
 });
@@ -68,6 +76,7 @@ store.subscribe((s) => {
 minusBtn.addEventListener('click', () => store.setPlateCount(store.state.plateCount - 1));
 plusBtn.addEventListener('click', () => store.setPlateCount(store.state.plateCount + 1));
 resetBtn.addEventListener('click', () => store.resetLock());
+invertBtn.addEventListener('click', () => store.toggleInvert());
 solveBtn.addEventListener('click', () => store.solvePuzzle());
 
 document.addEventListener('keydown', (e) => {

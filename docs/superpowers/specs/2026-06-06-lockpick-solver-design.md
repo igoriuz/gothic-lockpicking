@@ -35,11 +35,16 @@ Goal: every pin on position 4 (center). Moving a plate may drag other plates alo
 ### Edit mode
 - Lock cross-section: vertical stack of metal plates, plate 1 at the bottom, 7 holes
   each, bronze pin per plate. Click a hole to set that plate's pin position.
-- Click a plate to select it (blue highlight, like in-game). Linkages are recorded
-  relative to a reference push to the RIGHT (shown as an arrow on the selected plate):
-  every other plate shows tap arrows `‹ ›` directly on the lock — tap the direction
-  that plate moves when the selected one is pushed right (› = same, ‹ = opposite).
-  The side panel mirrors the same model with — / ‹ left / right › toggles per plate.
+- Click a plate to select it (blue highlight, like in-game). Every other plate shows
+  tap buttons `⇉ ⇄` directly on the lock: tap whether that plate moves the same way
+  (⇉) or mirrored (⇄) when the selected one is pushed — push direction doesn't matter,
+  which makes the entry robust. The side panel mirrors the same — / same / mirrored model.
+- **Inverted controls**: in game, pressing left slides the pin right. All instructions
+  (step text, plate arrows, move chips, test push) therefore show the KEY TO PRESS,
+  not the pin movement; pin displays stay visual. A `Controls: inverted/direct` toggle
+  (persisted in localStorage, default inverted) covers both possibilities.
+- Before each solve step, dashed ghost pins preview where every affected pin will
+  land, so the expected movement is visible before executing it in game.
 - Linkages are visualized on the lock itself via an SVG overlay (bronze = same,
   blue = opposite, arrows show direction).
 - Live preview: nudge the selected plate left/right in the app to verify the entered

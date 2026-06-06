@@ -1,4 +1,4 @@
-import type { AppState, Store } from '../store';
+import { gameDir, type AppState, type Store } from '../store';
 
 /** Solve-mode side panel: current move, step navigation, full move list. */
 export class SolvePanel {
@@ -39,10 +39,13 @@ export class SolvePanel {
     }
 
     const move = solution[s.step];
-    const dir = move.direction === 1 ? 'right' : 'left';
+    // Show the key you press in game — may be inverted vs. the pin movement.
+    const input = gameDir(move.direction, s.invertControls);
+    const dir = input === 1 ? 'right' : 'left';
+    const pinDir = move.direction === 1 ? 'right' : 'left';
     const chips = solution
       .map((m, idx) => {
-        const d = m.direction === 1 ? '&#9654;' : '&#9664;';
+        const d = gameDir(m.direction, s.invertControls) === 1 ? '&#9654;' : '&#9664;';
         const cls = idx < s.step ? 'done' : idx === s.step ? 'now' : '';
         return `<span class="chip ${cls}">${m.plate + 1}${d}</span>`;
       })
@@ -51,11 +54,13 @@ export class SolvePanel {
     this.root.innerHTML = `
       <h2 class="panel-title">Solution <span class="title-sub">— step ${s.step + 1} / ${solution.length}</span></h2>
       <div class="step-card ${dir}">
-        <span class="step-dir">${move.direction === -1 ? '&#9664;' : ''}</span>
+        <span class="step-dir">${input === -1 ? '&#9664;' : ''}</span>
         <span class="step-plate">Plate ${move.plate + 1}</span>
-        <span class="step-dir">${move.direction === 1 ? '&#9654;' : ''}</span>
+        <span class="step-dir">${input === 1 ? '&#9654;' : ''}</span>
       </div>
-      <p class="step-say">Push plate ${move.plate + 1} one step to the <b>${dir}</b></p>
+      <p class="step-say">Press <b>${dir}</b> on plate ${move.plate + 1}${
+        s.invertControls ? ` <span class="pin-note">&mdash; its pin slides ${pinDir}</span>` : ''
+      }</p>
       <div class="step-nav">
         <button class="seg" data-action="back" ${s.step === 0 ? 'disabled' : ''}>&#9664; back</button>
         <button class="btn-forge" data-action="next">next &#9654;</button>

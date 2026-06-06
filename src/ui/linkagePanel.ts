@@ -29,9 +29,10 @@ export class LinkagePanel {
         <h2 class="panel-title">Linkages</h2>
         <p class="hint">
           Select a plate on the lock to record what it drags along.
-          In game: push the plate one step right, watch which other
-          plates move &mdash; then tap the matching
-          <b>&#x276E;&thinsp;&#x276F;</b> arrows right on the lock.
+          In game: push the plate one step, watch which other plates
+          move with it &mdash; then tap <b>&#x21C9;</b> (same way) or
+          <b>&#x21C4;</b> (mirrored) right on the lock. Direction of the
+          push doesn't matter.
         </p>
         ${legend()}`;
       return;
@@ -49,14 +50,14 @@ export class LinkagePanel {
           <span class="link-label">Plate ${j + 1}</span>
           <div class="seg-group">
             ${seg('none', '&mdash;', !link)}
-            ${seg('opp', '&#x276E; left', link?.relation === -1)}
-            ${seg('same', 'right &#x276F;', link?.relation === 1)}
+            ${seg('same', '&#x21C9; same', link?.relation === 1)}
+            ${seg('opp', '&#x21C4; mirrored', link?.relation === -1)}
           </div>
         </div>`);
     }
 
     this.root.innerHTML = `
-      <h2 class="panel-title">Plate ${i + 1} <span class="title-sub">— pushed right &#x276F;, the others move…</span></h2>
+      <h2 class="panel-title">Plate ${i + 1} <span class="title-sub">— when pushed, also moves…</span></h2>
       <div class="link-rows">${rows.join('')}</div>
       ${legend()}
       <div class="test-push">
@@ -65,13 +66,14 @@ export class LinkagePanel {
           <button class="seg" data-nudge="left">&#9664; left</button>
           <button class="seg" data-nudge="right">right &#9654;</button>
         </div>
-        <p class="hint small">Nudge the plate here and compare with the game to verify your entries.</p>
+        <p class="hint small">Same keys as in game &mdash; push here and there
+          simultaneously: the pins should stay in sync.</p>
       </div>`;
   }
 }
 
 const legend = () => `
   <div class="legend">
-    <span><i class="swatch same"></i> moves along</span>
-    <span><i class="swatch opp"></i> moves mirrored</span>
+    <span><i class="swatch same"></i> &#x21C9; moves the same way</span>
+    <span><i class="swatch opp"></i> &#x21C4; moves mirrored</span>
   </div>`;

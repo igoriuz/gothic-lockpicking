@@ -1,6 +1,6 @@
 import type { AppState } from '../store';
-import type { Store } from '../store';
-import { MAX_POS, TARGET_POS } from '../solver';
+import { gameDir, type Store } from '../store';
+import { applyMove, MAX_POS, TARGET_POS } from '../solver';
 
 /**
  * Renders the lock cross-section: stacked metal plates (plate 1 at the bottom),
@@ -55,12 +55,13 @@ export class LockView {
         <div class="plaque">${i + 1}</div>
         <div class="bar">
           ${holes}
+          <div class="pin ghost"></div>
           <div class="pin"></div>
           <div class="push-arrow"></div>
         </div>
         <div class="link-taps">
-          <button class="tap" data-tap="left" title="Moves left when the selected plate is pushed right">&#x276E;</button>
-          <button class="tap" data-tap="right" title="Moves right when the selected plate is pushed right">&#x276F;</button>
+          <button class="tap" data-rel="same" title="Moves the same way as the selected plate">&#x21C9;</button>
+          <button class="tap" data-rel="opp" title="Moves opposite to the selected plate">&#x21C4;</button>
         </div>`;
       this.platesEl.appendChild(plate);
     }
@@ -72,10 +73,9 @@ export class LockView {
       const plate = Number(plateEl.dataset.plate);
       const tap = target.closest<HTMLElement>('.tap');
       if (tap) {
-        // Reference push is RIGHT: tapping › = same direction, ‹ = opposite.
         const { selected, linkages } = this.store.state;
         if (selected === null || selected === plate) return;
-        const rel = tap.dataset.tap === 'right' ? 1 : -1;
+        const rel = tap.dataset.rel === 'same' ? 1 : -1;
         const existing = linkages[selected].find((l) => l.target === plate);
         this.store.setLinkage(selected, plate, existing?.relation === rel ? null : rel);
         return;
@@ -96,6 +96,10 @@ export class LockView {
         : null;
     const opened =
       s.mode === 'solve' && s.solution !== null && s.step === s.solution.length;
+    // Where every pin will sit after the current step — shown as ghost targets.
+    const ghostPositions = activeMove
+      ? applyMove(positions, s.linkages, activeMove)
+      : null;
 
     this.root.classList.toggle('solving', s.mode === 'solve');
     this.root.classList.toggle('opened', opened);
@@ -107,28 +111,33 @@ export class LockView {
       plateEl.classList.toggle('active-move', activeMove?.plate === i);
       plateEl.classList.toggle('centered', pos === TARGET_POS);
 
-      const pin = plateEl.querySelector<HTMLElement>('.pin')!;
+      const pin = plateEl.querySelector<HTMLElement>('.pin:not(.ghost)')!;
       pin.style.setProperty('--pos', String(pos));
 
+      // Ghost target: where this pin will sit after the current step
+      const ghost = plateEl.querySelector<HTMLElement>('.pin.ghost')!;
+      const ghostPos = ghostPositions?.[i];
+      const showGhost = ghostPos !== undefined && ghostPos !== pos;
+      ghost.classList.toggle('show', showGhost);
+      if (showGhost) ghost.style.setProperty('--pos', String(ghostPos));
+
+      // The arrow shows the key you press in game (may be inverted vs. the pin)
       const arrow = plateEl.querySelector<HTMLElement>('.push-arrow')!;
-      const isRef = s.mode === 'edit' && s.selected === i;
-      arrow.classList.toggle('ref', isRef);
       if (activeMove?.plate === i) {
-        arrow.dataset.dir = activeMove.direction === 1 ? 'right' : 'left';
-      } else if (isRef) {
-        arrow.dataset.dir = 'right'; // reference push direction for linkage taps
+        const input = gameDir(activeMove.direction, s.invertControls);
+        arrow.dataset.dir = input === 1 ? 'right' : 'left';
       } else {
         delete arrow.dataset.dir;
       }
 
-      // Linkage tap arrows on every other plate while one is selected
+      // Linkage tap buttons on every other plate while one is selected
       const taps = plateEl.querySelector<HTMLElement>('.link-taps')!;
       const tapsVisible = s.mode === 'edit' && s.selected !== null && s.selected !== i;
       taps.classList.toggle('show', tapsVisible);
       if (tapsVisible) {
         const link = s.linkages[s.selected!].find((l) => l.target === i);
-        taps.querySelector('[data-tap="right"]')!.classList.toggle('on-same', link?.relation === 1);
-        taps.querySelector('[data-tap="left"]')!.classList.toggle('on-opp', link?.relation === -1);
+        taps.querySelector('[data-rel="same"]')!.classList.toggle('on-same', link?.relation === 1);
+        taps.querySelector('[data-rel="opp"]')!.classList.toggle('on-opp', link?.relation === -1);
       }
     }
 

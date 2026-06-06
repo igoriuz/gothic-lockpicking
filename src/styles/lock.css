@@ -207,7 +207,33 @@
     0 0 30px rgba(255, 148, 59, 0.35);
 }
 
-.opened .pin::before {
+/* Ghost target: where the pin will sit after the current step */
+.pin.ghost {
+  opacity: 0;
+  transition: left 0.4s cubic-bezier(0.3, 0.9, 0.3, 1), opacity 0.25s;
+}
+
+.pin.ghost::before {
+  background: none;
+  border: 2px dashed rgba(255, 180, 94, 0.65);
+  box-shadow: 0 0 10px rgba(255, 158, 64, 0.25) inset;
+  animation: ghost-pulse 1.2s ease-in-out infinite alternate;
+}
+
+.pin.ghost.show {
+  opacity: 1;
+}
+
+@keyframes ghost-pulse {
+  from {
+    border-color: rgba(255, 180, 94, 0.4);
+  }
+  to {
+    border-color: rgba(255, 180, 94, 0.9);
+  }
+}
+
+.opened .pin:not(.ghost)::before {
   animation: pin-blaze 1.1s ease-in-out infinite alternate;
 }
 
@@ -266,14 +292,7 @@
   }
 }
 
-/* Reference push hint on the selected plate (linkage recording) */
-.push-arrow.ref {
-  color: var(--steel-bright);
-  text-shadow: 0 0 10px rgba(127, 179, 209, 0.9);
-  animation-duration: 1.6s;
-}
-
-/* ─── Linkage tap arrows (record what moves along) ───────────────── */
+/* ─── Linkage tap buttons (record what moves along) ──────────────── */
 
 .plate {
   position: relative;
@@ -304,7 +323,7 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  font-size: 13px;
+  font-size: 15px;
   color: var(--parchment-dim);
   background: linear-gradient(180deg, var(--iron-hi), var(--iron-dark));
   border: 1px solid var(--line);
