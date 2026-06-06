@@ -21,6 +21,8 @@ export class LockView {
   private build(count: number): void {
     this.builtCount = count;
     this.root.innerHTML = `
+      <i class="bracket tl"></i><i class="bracket tr"></i>
+      <i class="bracket bl"></i><i class="bracket br"></i>
       <div class="bolt-channel"></div>
       <div class="plates"></div>
       <svg class="links" aria-hidden="true">
@@ -55,6 +57,10 @@ export class LockView {
           ${holes}
           <div class="pin"></div>
           <div class="push-arrow"></div>
+        </div>
+        <div class="link-taps">
+          <button class="tap" data-tap="left" title="Moves left when the selected plate is pushed right">&#x276E;</button>
+          <button class="tap" data-tap="right" title="Moves right when the selected plate is pushed right">&#x276F;</button>
         </div>`;
       this.platesEl.appendChild(plate);
     }
@@ -64,6 +70,16 @@ export class LockView {
       const plateEl = target.closest<HTMLElement>('.plate');
       if (!plateEl) return;
       const plate = Number(plateEl.dataset.plate);
+      const tap = target.closest<HTMLElement>('.tap');
+      if (tap) {
+        // Reference push is RIGHT: tapping › = same direction, ‹ = opposite.
+        const { selected, linkages } = this.store.state;
+        if (selected === null || selected === plate) return;
+        const rel = tap.dataset.tap === 'right' ? 1 : -1;
+        const existing = linkages[selected].find((l) => l.target === plate);
+        this.store.setLinkage(selected, plate, existing?.relation === rel ? null : rel);
+        return;
+      }
       const hole = target.closest<HTMLElement>('.hole');
       if (hole) this.store.setPosition(plate, Number(hole.dataset.pos));
       else this.store.selectPlate(plate);
@@ -95,10 +111,24 @@ export class LockView {
       pin.style.setProperty('--pos', String(pos));
 
       const arrow = plateEl.querySelector<HTMLElement>('.push-arrow')!;
+      const isRef = s.mode === 'edit' && s.selected === i;
+      arrow.classList.toggle('ref', isRef);
       if (activeMove?.plate === i) {
         arrow.dataset.dir = activeMove.direction === 1 ? 'right' : 'left';
+      } else if (isRef) {
+        arrow.dataset.dir = 'right'; // reference push direction for linkage taps
       } else {
         delete arrow.dataset.dir;
+      }
+
+      // Linkage tap arrows on every other plate while one is selected
+      const taps = plateEl.querySelector<HTMLElement>('.link-taps')!;
+      const tapsVisible = s.mode === 'edit' && s.selected !== null && s.selected !== i;
+      taps.classList.toggle('show', tapsVisible);
+      if (tapsVisible) {
+        const link = s.linkages[s.selected!].find((l) => l.target === i);
+        taps.querySelector('[data-tap="right"]')!.classList.toggle('on-same', link?.relation === 1);
+        taps.querySelector('[data-tap="left"]')!.classList.toggle('on-opp', link?.relation === -1);
       }
     }
 
@@ -125,9 +155,9 @@ export class LockView {
       for (const link of s.linkages[source]) {
         const y0 = yOf(source);
         const y1 = yOf(link.target);
-        const bulge = 26 + (lane % 3) * 16;
+        const bulge = 20 + (lane % 3) * 13;
         lane++;
-        const x = barRight + 6;
+        const x = barRight + 74;
         const cls = link.relation === 1 ? 'same' : 'opp';
         const dim =
           s.mode === 'edit' && s.selected !== null && s.selected !== source;

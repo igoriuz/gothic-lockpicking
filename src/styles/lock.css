@@ -2,7 +2,7 @@
 
 .lock-frame {
   position: relative;
-  padding: 30px 78px 30px 24px;
+  padding: 30px 134px 30px 24px;
   border-radius: 14px;
   background:
     radial-gradient(ellipse 120% 80% at 50% 0%, rgba(255, 158, 64, 0.05), transparent 60%),
@@ -13,6 +13,36 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.05),
     inset 0 0 80px rgba(0, 0, 0, 0.45);
 }
+
+/* Forged corner brackets, like the iron fittings of a chest */
+.bracket {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  pointer-events: none;
+  border: 4px solid #443928;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.8));
+}
+
+.bracket.tl { top: -3px; left: -3px; border-right: 0; border-bottom: 0; border-top-left-radius: 15px; }
+.bracket.tr { top: -3px; right: -3px; border-left: 0; border-bottom: 0; border-top-right-radius: 15px; }
+.bracket.bl { bottom: -3px; left: -3px; border-right: 0; border-top: 0; border-bottom-left-radius: 15px; }
+.bracket.br { bottom: -3px; right: -3px; border-left: 0; border-top: 0; border-bottom-right-radius: 15px; }
+
+.bracket::after {
+  content: '';
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #6e5d40, #2a2114 75%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.9), inset 0 1px 1px rgba(255, 235, 200, 0.25);
+}
+
+.bracket.tl::after { top: 6px; left: 6px; }
+.bracket.tr::after { top: 6px; right: 6px; }
+.bracket.bl::after { bottom: 6px; left: 6px; }
+.bracket.br::after { bottom: 6px; right: 6px; }
 
 /* Corner rivets */
 .lock-frame::before {
@@ -35,7 +65,7 @@
   bottom: 18px;
   width: 22px;
   /* center of hole column 4: pad-left + plaque + gap + half the bar width */
-  left: calc(24px + 34px + 14px + (100% - 24px - 78px - 34px - 14px) / 2);
+  left: calc(24px + 34px + 14px + (100% - 24px - 134px - 34px - 14px) / 2);
   transform: translateX(-50%);
   border-radius: 6px;
   background: linear-gradient(180deg, rgba(201, 138, 62, 0.16), rgba(201, 138, 62, 0.05));
@@ -61,7 +91,7 @@
   text-align: center;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 19px;
+  font-size: 26px;
   color: var(--parchment-dim);
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
   transition: color 0.2s, text-shadow 0.2s;
@@ -234,6 +264,69 @@
   50% {
     transform: translate(-6px, -50%);
   }
+}
+
+/* Reference push hint on the selected plate (linkage recording) */
+.push-arrow.ref {
+  color: var(--steel-bright);
+  text-shadow: 0 0 10px rgba(127, 179, 209, 0.9);
+  animation-duration: 1.6s;
+}
+
+/* ─── Linkage tap arrows (record what moves along) ───────────────── */
+
+.plate {
+  position: relative;
+}
+
+.link-taps {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 5px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.link-taps.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.tap {
+  all: unset;
+  cursor: pointer;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 13px;
+  color: var(--parchment-dim);
+  background: linear-gradient(180deg, var(--iron-hi), var(--iron-dark));
+  border: 1px solid var(--line);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+  transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.tap:hover {
+  color: var(--parchment);
+  border-color: rgba(216, 201, 168, 0.4);
+}
+
+.tap.on-same {
+  color: var(--bronze-bright);
+  border-color: var(--bronze);
+  box-shadow: 0 0 12px rgba(201, 138, 62, 0.5);
+}
+
+.tap.on-opp {
+  color: var(--steel-bright);
+  border-color: var(--steel);
+  box-shadow: 0 0 12px rgba(127, 179, 209, 0.5);
 }
 
 /* ─── Linkage arcs (right gutter) ────────────────────────────────── */

@@ -7,11 +7,22 @@
 }
 
 .panel-card {
+  position: relative;
   padding: 22px 22px 24px;
   border-radius: 12px;
   background: linear-gradient(165deg, #221c14, #15110c 60%);
   border: 1px solid var(--line);
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Manuscript-style inner hairline frame */
+.panel-card::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(201, 138, 62, 0.18);
+  border-radius: 8px;
+  pointer-events: none;
 }
 
 .panel-card[hidden] {
@@ -22,10 +33,10 @@
   margin: 0 0 14px;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 17px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 24px;
+  letter-spacing: 0.03em;
   color: var(--bronze-bright);
+  text-shadow: 0 0 16px rgba(255, 158, 64, 0.25);
 }
 
 .title-sub {
@@ -73,10 +84,9 @@
 }
 
 .link-label {
-  font-family: var(--font-display);
-  font-size: 13px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-family: var(--font-label);
+  font-size: 15px;
+  letter-spacing: 0.1em;
   color: var(--parchment);
 }
 
@@ -136,10 +146,9 @@
 
 .step-plate {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 26px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 34px;
+  letter-spacing: 0.04em;
   color: var(--parchment);
 }
 
@@ -190,8 +199,8 @@
 }
 
 .chip {
-  font-family: var(--font-display);
-  font-size: 13px;
+  font-family: var(--font-label);
+  font-size: 14px;
   padding: 3px 9px;
   border-radius: 5px;
   border: 1px solid var(--line);
@@ -231,10 +240,9 @@
 .opened-text {
   margin-top: 10px;
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 24px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 32px;
+  letter-spacing: 0.06em;
   color: var(--bronze-bright);
   text-shadow: 0 0 22px rgba(255, 158, 64, 0.6);
 }

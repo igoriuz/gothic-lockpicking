@@ -12,7 +12,7 @@ app.innerHTML = `
   <div class="page">
     <header class="masthead">
       <h1>Gothic <span class="accent">Lockpick</span></h1>
-      <p class="tagline">&#10070; linked-slider solver &middot; Gothic I Remake &#10070;</p>
+      <p class="tagline">&#9884; linked-slider solver &middot; Gothic I Remake &#9884;</p>
     </header>
 
     <section class="controls">

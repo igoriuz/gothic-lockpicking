@@ -29,8 +29,9 @@ export class LinkagePanel {
         <h2 class="panel-title">Linkages</h2>
         <p class="hint">
           Select a plate on the lock to record what it drags along.
-          Test each plate in-game first: push it one step, watch which
-          other plates move — and in which direction.
+          In game: push the plate one step right, watch which other
+          plates move &mdash; then tap the matching
+          <b>&#x276E;&thinsp;&#x276F;</b> arrows right on the lock.
         </p>
         ${legend()}`;
       return;
@@ -48,14 +49,14 @@ export class LinkagePanel {
           <span class="link-label">Plate ${j + 1}</span>
           <div class="seg-group">
             ${seg('none', '&mdash;', !link)}
-            ${seg('same', '&#8649; same', link?.relation === 1)}
-            ${seg('opp', '&#8644; opposite', link?.relation === -1)}
+            ${seg('opp', '&#x276E; left', link?.relation === -1)}
+            ${seg('same', 'right &#x276F;', link?.relation === 1)}
           </div>
         </div>`);
     }
 
     this.root.innerHTML = `
-      <h2 class="panel-title">Plate ${i + 1} <span class="title-sub">— when pushed, also moves…</span></h2>
+      <h2 class="panel-title">Plate ${i + 1} <span class="title-sub">— pushed right &#x276F;, the others move…</span></h2>
       <div class="link-rows">${rows.join('')}</div>
       ${legend()}
       <div class="test-push">
@@ -71,6 +72,6 @@ export class LinkagePanel {
 
 const legend = () => `
   <div class="legend">
-    <span><i class="swatch same"></i> same direction</span>
-    <span><i class="swatch opp"></i> opposite direction</span>
+    <span><i class="swatch same"></i> moves along</span>
+    <span><i class="swatch opp"></i> moves mirrored</span>
   </div>`;

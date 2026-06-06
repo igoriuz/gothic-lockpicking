@@ -16,7 +16,8 @@
   --iron: #262019;
   --iron-dark: #14100b;
   --line: rgba(216, 201, 168, 0.14);
-  --font-display: 'Cinzel', serif;
+  --font-display: 'Grenze Gotisch', serif;
+  --font-label: 'Alegreya SC', serif;
   --font-body: 'Alegreya', Georgia, serif;
 }
 
@@ -36,7 +37,6 @@ body {
 
 body {
   background:
-    radial-gradient(ellipse 90% 60% at 50% -10%, rgba(255, 158, 64, 0.13), transparent 60%),
     radial-gradient(ellipse 70% 90% at 110% 110%, rgba(64, 92, 110, 0.1), transparent 55%),
     linear-gradient(180deg, var(--bg1), var(--bg0) 55%);
   background-attachment: fixed;
@@ -44,6 +44,24 @@ body {
   font-family: var(--font-body);
   font-size: 17px;
   line-height: 1.5;
+}
+
+/* Flickering candlelight from above */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 85% 55% at 50% -8%, rgba(255, 158, 64, 0.16), transparent 62%);
+  animation: candle 5s ease-in-out infinite;
+}
+
+@keyframes candle {
+  0%, 100% { opacity: 1; }
+  37% { opacity: 0.82; }
+  52% { opacity: 0.96; }
+  71% { opacity: 0.86; }
+  84% { opacity: 0.93; }
 }
 
 /* Grain overlay */
@@ -71,25 +89,46 @@ body::after {
 
 .masthead h1 {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(34px, 5.4vw, 54px);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-weight: 600;
+  font-size: clamp(48px, 7.5vw, 78px);
+  letter-spacing: 0.025em;
+  line-height: 1.05;
   margin: 0;
-  color: var(--parchment);
-  text-shadow: 0 2px 18px rgba(255, 158, 64, 0.18);
+  background: linear-gradient(180deg, #f4e2b4 8%, var(--bronze-bright) 46%, #93601f 88%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 28px rgba(255, 158, 64, 0.28));
 }
 
 .masthead .accent {
-  color: var(--bronze-bright);
-  text-shadow: 0 0 26px rgba(255, 158, 64, 0.45);
+  background: linear-gradient(180deg, #fff0cd 8%, #ffc87e 46%, #a96f24 88%);
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
 .tagline {
-  margin: 6px 0 0;
-  font-style: italic;
+  margin: 8px 0 0;
+  font-family: var(--font-label);
+  font-size: 16px;
   color: var(--parchment-dim);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.tagline::before,
+.tagline::after {
+  content: '';
+  height: 1px;
+  width: clamp(40px, 12vw, 110px);
+  background: linear-gradient(90deg, transparent, var(--bronze));
+}
+
+.tagline::after {
+  background: linear-gradient(270deg, transparent, var(--bronze));
 }
 
 /* ─── Controls bar ────────────────────────────────────────────────── */
@@ -110,10 +149,9 @@ body::after {
 }
 
 .control-label {
-  font-family: var(--font-display);
-  font-size: 13px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  font-family: var(--font-label);
+  font-size: 15px;
+  letter-spacing: 0.16em;
   color: var(--parchment-dim);
 }
 
@@ -144,19 +182,18 @@ body::after {
   font-weight: 600;
   min-width: 26px;
   text-align: center;
-  font-size: 19px;
+  font-size: 22px;
 }
 
 /* Shared button styles */
 .seg {
   all: unset;
   cursor: pointer;
-  font-family: var(--font-display);
-  font-size: 13px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-family: var(--font-label);
+  font-size: 14px;
+  letter-spacing: 0.1em;
   color: var(--parchment);
-  padding: 8px 16px;
+  padding: 7px 16px;
   border: 1px solid var(--line);
   border-radius: 6px;
   background: linear-gradient(180deg, var(--iron-hi), var(--iron-dark));
@@ -186,23 +223,26 @@ body::after {
   cursor: pointer;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 15px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-size: 19px;
+  letter-spacing: 0.06em;
   color: #1c1206;
-  padding: 10px 26px;
-  border-radius: 6px;
+  padding: 8px 26px 10px;
+  border-radius: 0;
+  clip-path: polygon(
+    9px 0, calc(100% - 9px) 0, 100% 9px, 100% calc(100% - 9px),
+    calc(100% - 9px) 100%, 9px 100%, 0 calc(100% - 9px), 0 9px
+  );
   background: linear-gradient(180deg, var(--bronze-bright), var(--bronze) 55%, var(--bronze-deep));
   border: 1px solid rgba(255, 200, 130, 0.6);
-  box-shadow: 0 0 22px rgba(255, 158, 64, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 0 14px rgba(120, 60, 10, 0.35);
   text-shadow: 0 1px 0 rgba(255, 220, 170, 0.4);
-  transition: filter 0.2s, box-shadow 0.2s;
+  filter: drop-shadow(0 0 14px rgba(255, 158, 64, 0.3));
+  transition: filter 0.2s;
   text-align: center;
 }
 
 .btn-forge:hover {
-  filter: brightness(1.12);
-  box-shadow: 0 0 32px rgba(255, 158, 64, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  filter: brightness(1.12) drop-shadow(0 0 22px rgba(255, 158, 64, 0.5));
 }
 
 .message {
@@ -231,7 +271,8 @@ body::after {
 .footnote {
   margin-top: 30px;
   text-align: center;
+  font-family: var(--font-label);
   font-size: 14px;
-  font-style: italic;
+  letter-spacing: 0.06em;
   color: var(--parchment-dim);
 }

@@ -35,8 +35,11 @@ Goal: every pin on position 4 (center). Moving a plate may drag other plates alo
 ### Edit mode
 - Lock cross-section: vertical stack of metal plates, plate 1 at the bottom, 7 holes
   each, bronze pin per plate. Click a hole to set that plate's pin position.
-- Click a plate to select it (blue highlight, like in-game). A side panel shows its
-  linkage row: for every other plate a tri-state toggle (— / same / opposite).
+- Click a plate to select it (blue highlight, like in-game). Linkages are recorded
+  relative to a reference push to the RIGHT (shown as an arrow on the selected plate):
+  every other plate shows tap arrows `‹ ›` directly on the lock — tap the direction
+  that plate moves when the selected one is pushed right (› = same, ‹ = opposite).
+  The side panel mirrors the same model with — / ‹ left / right › toggles per plate.
 - Linkages are visualized on the lock itself via an SVG overlay (bronze = same,
   blue = opposite, arrows show direction).
 - Live preview: nudge the selected plate left/right in the app to verify the entered
