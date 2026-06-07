@@ -1,5 +1,4 @@
-import type { AppState } from '../store';
-import { gameDir, type Store } from '../store';
+import type { AppState, Store } from '../store';
 import { applyMove, MAX_POS, TARGET_POS } from '../solver';
 
 /**
@@ -24,7 +23,6 @@ export class LockView {
       <i class="bracket tl"></i><i class="bracket tr"></i>
       <i class="bracket bl"></i><i class="bracket br"></i>
       <div class="bolt-channel"></div>
-      <div class="lockpick"></div>
       <div class="plates"></div>
       <svg class="links" aria-hidden="true">
         <defs>
@@ -47,23 +45,18 @@ export class LockView {
       const plate = document.createElement('div');
       plate.className = 'plate';
       plate.dataset.plate = String(i);
-      // The slab is 13 columns wide (7 holes + 3 solid columns each side) and
-      // slides inside the bar slot; pin and holes travel with it.
-      const slabHoles = Array.from(
-        { length: MAX_POS },
-        (_, h) => `<div class="hole" style="grid-column:${h + 4}"></div>`,
-      ).join('');
-      const zones = Array.from({ length: MAX_POS }, (_, h) => {
+      // The slab is 19 columns wide (7 holes + 6 solid columns each side) and
+      // slides inside the bar slot; holes and peg travel with it. Holes are
+      // clickable: the peg hops into the clicked hole.
+      const slabHoles = Array.from({ length: MAX_POS }, (_, h) => {
         const pos = h + 1;
-        const center = pos === TARGET_POS ? ' center' : '';
-        return `<button class="zone${center}" data-pos="${pos}" aria-label="Plate ${i + 1}, position ${pos}"></button>`;
+        return `<button class="hole" style="grid-column:${pos + 6}" data-pos="${pos}" aria-label="Plate ${i + 1}, hole ${pos}"></button>`;
       }).join('');
       plate.innerHTML = `
         <div class="plaque">${i + 1}</div>
         <div class="bar">
           <div class="slab">${slabHoles}<div class="peg"></div></div>
           <div class="pin ghost"></div>
-          <div class="zones">${zones}</div>
           <div class="push-arrow"></div>
         </div>
         <div class="link-taps">
@@ -87,8 +80,8 @@ export class LockView {
         this.store.setLinkage(selected, plate, existing?.relation === rel ? null : rel);
         return;
       }
-      const zone = target.closest<HTMLElement>('.zone');
-      if (zone) this.store.setPosition(plate, Number(zone.dataset.pos));
+      const hole = target.closest<HTMLElement>('.hole');
+      if (hole) this.store.setPosition(plate, Number(hole.dataset.pos));
       else this.store.selectPlate(plate);
     });
   }
@@ -118,8 +111,10 @@ export class LockView {
       plateEl.classList.toggle('active-move', activeMove?.plate === i);
       plateEl.classList.toggle('centered', pos === TARGET_POS);
 
-      // The whole slab slides so that its pin hole sits at window column `pos`
-      plateEl.querySelector<HTMLElement>('.slab')!.style.setProperty('--pos', String(pos));
+      // The peg sits in its hole; the slab's offset puts that hole at column `pos`
+      const slab = plateEl.querySelector<HTMLElement>('.slab')!;
+      slab.style.setProperty('--hole', String(s.baseHoles[i]));
+      slab.style.setProperty('--offset', String(pos - s.baseHoles[i]));
 
       // Ghost target: where this pin will sit after the current step
       const ghost = plateEl.querySelector<HTMLElement>('.pin.ghost')!;
@@ -128,11 +123,10 @@ export class LockView {
       ghost.classList.toggle('show', showGhost);
       if (showGhost) ghost.style.setProperty('--pos', String(ghostPos));
 
-      // The arrow shows the key you press in game (may be inverted vs. the pin)
+      // The arrow shows the visible slide direction (matches the animation)
       const arrow = plateEl.querySelector<HTMLElement>('.push-arrow')!;
       if (activeMove?.plate === i) {
-        const input = gameDir(activeMove.direction, s.invertControls);
-        arrow.dataset.dir = input === 1 ? 'right' : 'left';
+        arrow.dataset.dir = activeMove.direction === 1 ? 'right' : 'left';
       } else {
         delete arrow.dataset.dir;
       }

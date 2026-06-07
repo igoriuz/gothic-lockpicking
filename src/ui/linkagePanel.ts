@@ -41,7 +41,16 @@ export class LinkagePanel {
     const i = s.selected;
     const rows = [];
     for (let j = s.plateCount - 1; j >= 0; j--) {
-      if (j === i) continue;
+      // The selected plate stays visible but disabled, so the row order
+      // always mirrors the lock and you can't mix plates up.
+      if (j === i) {
+        rows.push(`
+          <div class="link-row self">
+            <span class="link-label">Plate ${j + 1}</span>
+            <span class="self-note">selected &mdash; the plate you push</span>
+          </div>`);
+        continue;
+      }
       const link = s.linkages[i].find((l) => l.target === j);
       const seg = (rel: string, label: string, active: boolean) =>
         `<button class="seg${active ? ' on' : ''}" data-target="${j}" data-rel="${rel}">${label}</button>`;
@@ -63,11 +72,11 @@ export class LinkagePanel {
       <div class="test-push">
         <span class="link-label">Test push</span>
         <div class="seg-group">
-          <button class="seg" data-nudge="left">&#9664; left</button>
-          <button class="seg" data-nudge="right">right &#9654;</button>
+          <button class="seg" data-nudge="left">&#9664; slide left</button>
+          <button class="seg" data-nudge="right">slide right &#9654;</button>
         </div>
-        <p class="hint small">Same keys as in game &mdash; push here and there
-          simultaneously: the pins should stay in sync.</p>
+        <p class="hint small">Slides the plate here like in game &mdash; mind that
+          the in-game arrow keys are inverted.</p>
       </div>`;
   }
 }

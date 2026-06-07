@@ -1,5 +1,6 @@
 import {
   applyMove,
+  isSolved,
   solve,
   TARGET_POS,
   MIN_PLATES,
@@ -14,6 +15,8 @@ export type Mode = 'edit' | 'solve';
 export interface AppState {
   plateCount: number;
   positions: number[]; // edit-mode pin positions (1–7), index 0 = bottom plate
+  /** Which hole of each plate the peg sits in (last clicked) — purely visual. */
+  baseHoles: number[];
   linkages: Linkage[][];
   selected: number | null; // plate whose linkages are being edited
   mode: Mode;
@@ -44,6 +47,7 @@ const loadInvert = (): boolean => {
 const freshState = (plateCount: number, invertControls: boolean): AppState => ({
   plateCount,
   positions: Array(plateCount).fill(TARGET_POS),
+  baseHoles: Array(plateCount).fill(TARGET_POS),
   linkages: Array.from({ length: plateCount }, () => []),
   selected: null,
   mode: 'edit',
@@ -96,6 +100,7 @@ export class Store {
     if (this.state.mode !== 'edit') return;
     this.mutate((s) => {
       s.positions[plate] = pos;
+      s.baseHoles[plate] = pos; // peg hops into the clicked hole, slab recenters
       s.selected = plate;
       s.message = null;
     });
@@ -118,12 +123,11 @@ export class Store {
     });
   }
 
-  /** Test-push the selected plate (direction = the key pressed in game). */
+  /** Test-push the selected plate (direction = visible slide direction). */
   nudge(direction: Direction): void {
-    const { selected, positions, linkages, invertControls } = this.state;
+    const { selected, positions, linkages } = this.state;
     if (selected === null) return;
-    const pinDir = gameDir(direction, invertControls);
-    const next = applyMove(positions, linkages, { plate: selected, direction: pinDir });
+    const next = applyMove(positions, linkages, { plate: selected, direction });
     this.mutate((s) => {
       if (next === null) {
         s.message = 'Rattle! A plate hit the edge — that push is blocked.';
@@ -135,6 +139,13 @@ export class Store {
   }
 
   solvePuzzle(): void {
+    if (isSolved(this.state.positions)) {
+      this.mutate((s) => {
+        s.message =
+          'All pins are already centered — click the holes to set where each pin currently sits.';
+      });
+      return;
+    }
     const solution = solve({
       positions: this.state.positions,
       linkages: this.state.linkages,

@@ -26,9 +26,9 @@ app.innerHTML = `
       </div>
       <button id="reset" class="seg">reset</button>
       <div class="control-group">
-        <span class="control-label">Controls</span>
+        <span class="control-label">Keys</span>
         <button id="invert" class="seg"
-          title="Inverted: pressing left in game slides the pin right. All instructions show the key to press.">inverted</button>
+          title="Inverted (Gothic default): pressing left on the keyboard slides the plate right. Only the 'press …' hint changes — all arrows always show the visible slide direction.">inverted</button>
       </div>
       <button id="solve" class="btn-forge">&#128273; Pick the lock</button>
       <p id="message" class="message" hidden></p>

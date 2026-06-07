@@ -39,10 +39,15 @@ Goal: every pin on position 4 (center). Moving a plate may drag other plates alo
   tap buttons `⇉ ⇄` directly on the lock: tap whether that plate moves the same way
   (⇉) or mirrored (⇄) when the selected one is pushed — push direction doesn't matter,
   which makes the entry robust. The side panel mirrors the same — / same / mirrored model.
-- **Inverted controls**: in game, pressing left slides the pin right. All instructions
-  (step text, plate arrows, move chips, test push) therefore show the KEY TO PRESS,
-  not the pin movement; pin displays stay visual. A `Controls: inverted/direct` toggle
-  (persisted in localStorage, default inverted) covers both possibilities.
+- **Directions are always the VISIBLE slide direction** (what you see on screen:
+  arrows, chips, animations, test push). In game, pressing left slides the plate
+  right, so the key to press is shown only as a secondary hint in the step text
+  ("Plate 3 slides right — press ◀ left"). A `Keys: inverted/direct` toggle
+  (persisted in localStorage, default inverted) controls only that hint.
+- Setup: clicking a hole makes the peg hop into that hole (slab stays put);
+  test pushes and solve steps slide the whole slab. The selected plate also
+  appears in the linkage panel as a disabled, highlighted row for orientation.
+- Solving an already-solved lock is blocked with a hint to set pin positions first.
 - Before each solve step, dashed ghost pins preview where every affected pin will
   land, so the expected movement is visible before executing it in game.
 - Linkages are visualized on the lock itself via an SVG overlay (bronze = same,
