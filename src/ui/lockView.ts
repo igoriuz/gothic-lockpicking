@@ -24,6 +24,7 @@ export class LockView {
       <i class="bracket tl"></i><i class="bracket tr"></i>
       <i class="bracket bl"></i><i class="bracket br"></i>
       <div class="bolt-channel"></div>
+      <div class="lockpick"></div>
       <div class="plates"></div>
       <svg class="links" aria-hidden="true">
         <defs>
@@ -46,17 +47,23 @@ export class LockView {
       const plate = document.createElement('div');
       plate.className = 'plate';
       plate.dataset.plate = String(i);
-      const holes = Array.from({ length: MAX_POS }, (_, h) => {
+      // The slab is 13 columns wide (7 holes + 3 solid columns each side) and
+      // slides inside the bar slot; pin and holes travel with it.
+      const slabHoles = Array.from(
+        { length: MAX_POS },
+        (_, h) => `<div class="hole" style="grid-column:${h + 4}"></div>`,
+      ).join('');
+      const zones = Array.from({ length: MAX_POS }, (_, h) => {
         const pos = h + 1;
         const center = pos === TARGET_POS ? ' center' : '';
-        return `<button class="hole${center}" data-pos="${pos}" aria-label="Plate ${i + 1}, position ${pos}"></button>`;
+        return `<button class="zone${center}" data-pos="${pos}" aria-label="Plate ${i + 1}, position ${pos}"></button>`;
       }).join('');
       plate.innerHTML = `
         <div class="plaque">${i + 1}</div>
         <div class="bar">
-          ${holes}
+          <div class="slab">${slabHoles}<div class="peg"></div></div>
           <div class="pin ghost"></div>
-          <div class="pin"></div>
+          <div class="zones">${zones}</div>
           <div class="push-arrow"></div>
         </div>
         <div class="link-taps">
@@ -80,8 +87,8 @@ export class LockView {
         this.store.setLinkage(selected, plate, existing?.relation === rel ? null : rel);
         return;
       }
-      const hole = target.closest<HTMLElement>('.hole');
-      if (hole) this.store.setPosition(plate, Number(hole.dataset.pos));
+      const zone = target.closest<HTMLElement>('.zone');
+      if (zone) this.store.setPosition(plate, Number(zone.dataset.pos));
       else this.store.selectPlate(plate);
     });
   }
@@ -111,8 +118,8 @@ export class LockView {
       plateEl.classList.toggle('active-move', activeMove?.plate === i);
       plateEl.classList.toggle('centered', pos === TARGET_POS);
 
-      const pin = plateEl.querySelector<HTMLElement>('.pin:not(.ghost)')!;
-      pin.style.setProperty('--pos', String(pos));
+      // The whole slab slides so that its pin hole sits at window column `pos`
+      plateEl.querySelector<HTMLElement>('.slab')!.style.setProperty('--pos', String(pos));
 
       // Ghost target: where this pin will sit after the current step
       const ghost = plateEl.querySelector<HTMLElement>('.pin.ghost')!;

@@ -12,9 +12,9 @@
   --steel-bright: #b8e0f5;
   --pin-off: #d9b14a;
   --pin-on: #ff943b;
-  --iron-hi: #3d3428;
-  --iron: #262019;
-  --iron-dark: #14100b;
+  --iron-hi: #332c21;
+  --iron: #1f1a14;
+  --iron-dark: #0f0c08;
   --line: rgba(216, 201, 168, 0.14);
   --font-display: 'Grenze Gotisch', serif;
   --font-label: 'Alegreya SC', serif;
@@ -36,9 +36,14 @@ body {
 }
 
 body {
+  /* Dark wooden planks under a heavy vignette, like the in-game table */
   background:
-    radial-gradient(ellipse 70% 90% at 110% 110%, rgba(64, 92, 110, 0.1), transparent 55%),
-    linear-gradient(180deg, var(--bg1), var(--bg0) 55%);
+    radial-gradient(ellipse 130% 95% at 50% 30%, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.72) 100%),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.55) 0 2px, transparent 2px 146px),
+    repeating-linear-gradient(88deg,
+      rgba(255, 214, 160, 0.02) 0 3px, transparent 3px 8px,
+      rgba(0, 0, 0, 0.07) 8px 13px, transparent 13px 21px),
+    linear-gradient(180deg, #181008, #0b0703 60%);
   background-attachment: fixed;
   color: var(--parchment);
   font-family: var(--font-body);
@@ -52,7 +57,7 @@ body::before {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(ellipse 85% 55% at 50% -8%, rgba(255, 158, 64, 0.16), transparent 62%);
+  background: radial-gradient(ellipse 85% 55% at 50% -8%, rgba(255, 148, 54, 0.11), transparent 62%);
   animation: candle 5s ease-in-out infinite;
 }
 
